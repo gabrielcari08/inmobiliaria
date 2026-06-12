@@ -15,7 +15,7 @@
 
     <article>
         {% if property.main_image %}
-        <div class="rounded-lg overflow-hidden shadow-sm border border-gray-200 mb-8">
+        <div class="rounded-lg overflow-hidden shadow-sm border border-gray-200 mb-8 cursor-pointer" onclick="openLightbox(0)">
             <img src="{{ property.main_image.url }}" alt="{{ property.title }}" class="w-full h-96 object-cover">
         </div>
         {% endif %}
@@ -32,7 +32,15 @@
                         {{ property.location }}
                     </p>
                 </div>
-                <span class="text-3xl font-bold text-gray-900">${{ property.price|floatformat:2 }}</span>
+                <div class="text-right">
+                    <span class="text-3xl font-bold text-gray-900 block">${{ property.price|floatformat:2 }}</span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold mt-2
+                        {% if property.status == 'AVAILABLE' %}bg-green-100 text-green-800
+                        {% elif property.status == 'SALE' %}bg-yellow-100 text-yellow-800
+                        {% elif property.status == 'RENTED' %}bg-red-100 text-red-800{% endif %}">
+                        {{ property.get_status_display }}
+                    </span>
+                </div>
             </div>
 
             <div class="flex flex-wrap gap-6 py-4 border-t border-gray-200">
@@ -63,15 +71,80 @@
             <p class="text-gray-700 leading-relaxed">{{ property.description }}</p>
         </div>
 
+        {% with images=property.images.all %}
+        {% if images %}
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
             <h2 class="text-xl font-bold text-gray-900 mb-4">Photo Gallery</h2>
-            <div class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-                <p class="mt-2 text-gray-500">Additional photos coming soon</p>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {% for img in images %}
+                <div class="rounded-lg overflow-hidden cursor-pointer" onclick="openLightbox({{ forloop.counter }})">
+                    <img src="{{ img.image.url }}" alt="{{ property.title }}" class="w-full h-40 object-cover hover:opacity-90 transition-opacity">
+                </div>
+                {% endfor %}
             </div>
         </div>
+        {% endif %}
+        {% endwith %}
     </article>
 </div>
+
+<div id="lightbox" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden items-center justify-center" onclick="closeLightbox(event)">
+    <button onclick="closeLightbox(event)" class="absolute top-4 right-4 text-white text-3xl hover:text-gray-300 z-10">&times;</button>
+    <button onclick="prevImage(event)" class="absolute left-4 text-white text-4xl hover:text-gray-300 z-10">&lsaquo;</button>
+    <button onclick="nextImage(event)" class="absolute right-4 text-white text-4xl hover:text-gray-300 z-10">&rsaquo;</button>
+    <img id="lightbox-img" src="" alt="Enlarged image" class="max-w-[90%] max-h-[90%] object-contain">
+</div>
+
+<script>
+var images = [
+    {% if property.main_image %}'{{ property.main_image.url }}',{% endif %}
+    {% for img in property.images.all %}'{{ img.image.url }}',{% endfor %}
+];
+var currentIndex = 0;
+
+function openLightbox(index) {
+    currentIndex = index;
+    document.getElementById('lightbox-img').src = images[currentIndex];
+    document.getElementById('lightbox').classList.remove('hidden');
+    document.getElementById('lightbox').classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(event) {
+    if (event.target === event.currentTarget || event.target.tagName === 'BUTTON') {
+        document.getElementById('lightbox').classList.add('hidden');
+        document.getElementById('lightbox').classList.remove('flex');
+        document.body.style.overflow = '';
+    }
+}
+
+function prevImage(event) {
+    event.stopPropagation();
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    document.getElementById('lightbox-img').src = images[currentIndex];
+}
+
+function nextImage(event) {
+    event.stopPropagation();
+    currentIndex = (currentIndex + 1) % images.length;
+    document.getElementById('lightbox-img').src = images[currentIndex];
+}
+
+document.addEventListener('keydown', function(e) {
+    var lb = document.getElementById('lightbox');
+    if (!lb.classList.contains('hidden')) {
+        if (e.key === 'Escape') {
+            lb.classList.add('hidden');
+            lb.classList.remove('flex');
+            document.body.style.overflow = '';
+        } else if (e.key === 'ArrowLeft') {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            document.getElementById('lightbox-img').src = images[currentIndex];
+        } else if (e.key === 'ArrowRight') {
+            currentIndex = (currentIndex + 1) % images.length;
+            document.getElementById('lightbox-img').src = images[currentIndex];
+        }
+    }
+});
+</script>
 {% endblock %}

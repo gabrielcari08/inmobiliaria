@@ -10,7 +10,7 @@ class TestPropertyModel:
         prop.save()
         assert prop.title == 'Test Property'
         assert prop.price == 1500.00
-        assert prop.is_available is True
+        assert prop.status == Property.Status.AVAILABLE
 
     def test_price_must_be_positive(self, property_data):
         property_data['price'] = 0

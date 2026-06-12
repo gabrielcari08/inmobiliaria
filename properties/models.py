@@ -4,6 +4,12 @@ from django.core.validators import MinValueValidator
 
 
 class Property(models.Model):
+
+    class Status(models.TextChoices):
+        AVAILABLE = 'AVAILABLE', 'Available'
+        SALE = 'SALE', 'Sale'
+        RENTED = 'RENTED', 'Rented'
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
     description = models.TextField()
@@ -15,7 +21,11 @@ class Property(models.Model):
     location = models.CharField(max_length=255)
     bedrooms = models.PositiveIntegerField(default=1)
     bathrooms = models.PositiveIntegerField(default=1)
-    is_available = models.BooleanField(default=True)
+    status = models.CharField(
+        max_length=10,
+        choices=Status,
+        default=Status.AVAILABLE,
+    )
     main_image = models.ImageField(upload_to='properties/')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -25,3 +35,16 @@ class Property(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class PropertyImage(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='properties/')
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.property.title} - Image {self.order}"

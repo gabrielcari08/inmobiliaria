@@ -11,7 +11,7 @@ class TestPropertyListView:
             location='Suburbs',
             bedrooms=3,
             bathrooms=2,
-            is_available=False,
+            status=Property.Status.RENTED,
             main_image=property_instance.main_image,
         )
         url = reverse('properties:property_list')
@@ -21,7 +21,7 @@ class TestPropertyListView:
         assert 'Unavailable Property' not in str(response.content)
 
     def test_list_empty_when_no_available(self, client, property_data):
-        property_data['is_available'] = False
+        property_data['status'] = Property.Status.RENTED
         Property.objects.create(**property_data)
         url = reverse('properties:property_list')
         response = client.get(url)
@@ -42,7 +42,7 @@ class TestPropertyDetailView:
         assert 'Test Property' in str(response.content)
 
     def test_detail_returns_404_for_unavailable(self, client, property_data):
-        property_data['is_available'] = False
+        property_data['status'] = Property.Status.RENTED
         prop = Property.objects.create(**property_data)
         url = reverse('properties:property_detail', args=[prop.id])
         response = client.get(url)

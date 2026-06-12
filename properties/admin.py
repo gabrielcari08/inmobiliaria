@@ -1,12 +1,19 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
-from .models import Property
+from .models import Property, PropertyImage
+
+
+class PropertyImageInline(admin.TabularInline):
+    model = PropertyImage
+    extra = 1
+    fields = ['image', 'order']
 
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = ['title', 'price', 'location', 'bedrooms', 'bathrooms', 'is_available', 'created_at']
-    list_filter = ['is_available', 'bedrooms', 'bathrooms', 'created_at']
+    inlines = [PropertyImageInline]
+    list_display = ['title', 'price', 'location', 'bedrooms', 'bathrooms', 'status', 'created_at']
+    list_filter = ['status', 'bedrooms', 'bathrooms', 'created_at']
     search_fields = ['title', 'location', 'description']
     readonly_fields = ['created_at', 'updated_at']
     fieldsets = (
@@ -14,7 +21,7 @@ class PropertyAdmin(admin.ModelAdmin):
             'fields': ('title', 'description', 'price', 'location')
         }),
         ('Features', {
-            'fields': ('bedrooms', 'bathrooms', 'is_available')
+            'fields': ('bedrooms', 'bathrooms', 'status')
         }),
         ('Media', {
             'fields': ('main_image',)

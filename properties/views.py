@@ -7,9 +7,7 @@ class PropertyListView(ListView):
     template_name = 'properties/property_list.html'
     context_object_name = 'properties'
     paginate_by = 12
-
-    def get_queryset(self):
-        return Property.objects.filter(is_available=True)
+    queryset = Property.objects.all()
 
 
 class PropertyDetailView(DetailView):
@@ -17,6 +15,4 @@ class PropertyDetailView(DetailView):
     template_name = 'properties/property_detail.html'
     context_object_name = 'property'
     pk_url_kwarg = 'id'
-
-    def get_queryset(self):
-        return Property.objects.filter(is_available=True)
+    queryset = Property.objects.all()

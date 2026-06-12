@@ -5,7 +5,7 @@
 - **Overview:** We are building the visual core of the website. The goal is to display a catalog of rental properties so that visitors can review prices, locations, and features.
 - **Domain/Business Rules:**
   - **Admin-Driven:** The inventory can only be managed (create, edit, delete) by the administrator through the Django Admin Panel.
-  - **Availability:** Properties must have a status (`AVAILABLE`, `SALE`, or `RENTED`). Only `AVAILABLE` properties will be displayed on the public website.
+  - **Availability:** Properties must have a status (`ON_RENT`, `ON_SALE`, `RENTED`, or `SALE`). Only `ON_RENT` and `ON_SALE` properties will be displayed on the public website.
   - **Financial Safety:** The monthly rental price must be a positive value strictly greater than zero.
 
 ## 2. Functional Requirements
@@ -26,7 +26,7 @@
 - `location`: CharField(255) (e.g., City or Neighborhood)
 - `bedrooms`: PositiveIntegerField(default=1)
 - `bathrooms`: PositiveIntegerField(default=1)
-- `status`: CharField(10, choices=AVAILABLE/SALE/RENTED, default=AVAILABLE)
+- `status`: CharField(10, choices=ON_RENT/ON_SALE/RENTED/SALE, default=ON_RENT)
 - `main_image`: ImageField(upload_to='properties/')
 - `created_at`: DateTimeField(auto_now_add=True)
 - `updated_at`: DateTimeField(auto_now=True)

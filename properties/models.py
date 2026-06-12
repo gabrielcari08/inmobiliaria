@@ -6,9 +6,10 @@ from django.core.validators import MinValueValidator
 class Property(models.Model):
 
     class Status(models.TextChoices):
-        AVAILABLE = 'AVAILABLE', 'Available'
-        SALE = 'SALE', 'Sale'
+        ON_RENT = 'ON_RENT', 'On Rent'
+        ON_SALE = 'ON_SALE', 'On Sale'
         RENTED = 'RENTED', 'Rented'
+        SALE = 'SALE', 'Sale'
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
@@ -24,7 +25,7 @@ class Property(models.Model):
     status = models.CharField(
         max_length=10,
         choices=Status,
-        default=Status.AVAILABLE,
+        default=Status.ON_RENT,
     )
     main_image = models.ImageField(upload_to='properties/')
     created_at = models.DateTimeField(auto_now_add=True)

@@ -11,7 +11,7 @@ class TestPropertyListView:
             location='Suburbs',
             bedrooms=3,
             bathrooms=2,
-            status=Property.Status.RENTED,
+            status=Property.Status.SALE,
             main_image=property_instance.main_image,
         )
         url = reverse('properties:property_list')

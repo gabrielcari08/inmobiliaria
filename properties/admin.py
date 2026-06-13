@@ -18,7 +18,7 @@ class PropertyAdmin(admin.ModelAdmin):
     readonly_fields = ['created_at', 'updated_at']
     fieldsets = (
         (None, {
-            'fields': ('title', 'description', 'price', 'location')
+            'fields': ('title', 'description', 'price', 'location', 'map_link')
         }),
         ('Features', {
             'fields': ('bedrooms', 'bathrooms', 'status')

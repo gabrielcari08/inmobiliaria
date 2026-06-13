@@ -20,6 +20,7 @@ class Property(models.Model):
         validators=[MinValueValidator(0.01)]
     )
     location = models.CharField(max_length=255)
+    map_link = models.URLField(max_length=500, blank=True)
     bedrooms = models.PositiveIntegerField(default=1)
     bathrooms = models.PositiveIntegerField(default=1)
     status = models.CharField(
